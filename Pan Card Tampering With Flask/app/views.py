@@ -6,7 +6,6 @@ from skimage.metrics import structural_similarity
 import imutils
 import cv2
 from PIL import Image
-import numpy as np
 
 # Adding path to config
 app.config['INITIAL_FILE_UPLOADS'] = 'app/static/uploads'
@@ -39,7 +38,6 @@ def index():
                 original_image = cv2.imread(os.path.join(app.config['EXISTNG_FILE'], 'image.jpg'))
                 uploaded_image = cv2.imread(os.path.join(app.config['INITIAL_FILE_UPLOADS'], 'image.jpg'))
 
-                mask = np.zeros(original_image.shape, dtype='uint8')
 
                 # Convert image into grayscale
                 original_gray = cv2.cvtColor(original_image, cv2.COLOR_BGR2GRAY)
@@ -59,14 +57,12 @@ def index():
                     (x, y, w, h) = cv2.boundingRect(c)
                     cv2.rectangle(original_image, (x, y), (x + w, y + h), (0, 0, 255), 2)
                     cv2.rectangle(uploaded_image, (x, y), (x + w, y + h), (0, 0, 255), 2)
-                    cv2.drawContours(mask, [c], 0, (0,255,0), -1)
 
                 # Save all output images (if required)
                 cv2.imwrite(os.path.join(app.config['GENERATED_FILE'], 'image_original.jpg'), original_image)
                 cv2.imwrite(os.path.join(app.config['GENERATED_FILE'], 'image_uploaded.jpg'), uploaded_image)
                 cv2.imwrite(os.path.join(app.config['GENERATED_FILE'], 'image_diff.jpg'), diff)
                 cv2.imwrite(os.path.join(app.config['GENERATED_FILE'], 'image_thresh.jpg'), thresh)
-                cv2.imwrite(os.path.join(app.config['GENERATED_FILE'], 'image_mask.jpg'), mask)
                 return render_template('index.html',pred=str(round(score*100,2)) + '%' + ' correct')
        
 # Main function
